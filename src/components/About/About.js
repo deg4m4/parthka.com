@@ -37,16 +37,6 @@ const About = () => {
                 <GitHubIcon />
               </a>
             )}
-
-            {social.linkedin && (
-              <a
-                href={social.linkedin}
-                aria-label='linkedin'
-                className='link link--icon'
-              >
-                <LinkedInIcon />
-              </a>
-            )}
           </>
         )}
       </div>

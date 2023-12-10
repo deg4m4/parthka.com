@@ -13,19 +13,26 @@
 
 .about__desc {
   font-size: 1rem;
-  max-width: 600px;
+  max-width: 550px;
 }
 
 .about__desc,
 .about__contact {
+  display: flex;
   margin-top: 2.4em;
 }
 
+.about__contact  * {
+  margin: auto;
+}
+
 .about .link--icon {
+  margin: auto;
   margin-right: 0.8em;
 }
 
 .about .btn--outline {
+  margin: auto;
   margin-right: 1em;
 }
 
