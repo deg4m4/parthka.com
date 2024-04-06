@@ -1,0 +1,10 @@
+.about-section .subheading-anchor:hover{
+    text-decoration: none;
+    pointer-events: none;
+    cursor: pointer;
+}
+
+.about-section .subheading-anchor:hover *{
+    pointer-events: none;
+    cursor: pointer;
+}

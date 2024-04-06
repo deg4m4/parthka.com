@@ -1,0 +1,43 @@
+---
+title: casm
+---
+
+casm is x86_64 / amd64 Instruction Set Architecture Assembler, casm is my hobby project, I'm learn how programming language works, basically programming language convert to particular Instruction Set Architecture Assembly and assembler is read assembly and convert to particular Instruction Set Architecture machine code, Computer machine code is binary (0/1), That computer understand and process.
+
+This assembler is not full fledged, But i'm wrote this assembler and now i'm understand how programming language work.
+
+## Download
+**[Click Here](https://parthka.com/casm-hobby_v1.tar.gz)** to Download this assembler!
+
+## Build
+This assembler is written in GoLang, so require GoLang, if GoLang is not install in your computer then install GoLang. Visit [https://go.dev/doc/install](https://go.dev/doc/install) to install GoLang.
+
+Extract Downloaded file, and open terminal in extracted directory, and type this command in terminal
+
+```bash
+go build -o casm cmd/casm.go
+```
+
+If command is executed then generated casm executable file.
+
+## Hello, World!
+Execute `Hello, World!` Assembly program using casm.
+
+Hello, World! program is written in test_files/helloworld.asm file, assemble this file then generate `Hello, World!` executable file!, type this command in terminal and assemble `Hello, World!` assembly file
+
+```bash
+./casm test_files/helloworld.asm
+```
+
+Executable file is generated, file name is a.out, Execute this file using this command
+
+```bash
+./a.out
+```
+
+Now you can see `Hello, World!` in terminal!
+
+
+## Limitation
+
+This assembler is not full fledged then many feature is not working like SIB, pre arithmetic operations, include statement, etcetera...
