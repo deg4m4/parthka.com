@@ -1,0 +1,245 @@
+---
+title: Building a TCP Server and Client in Go
+description: In this post, we'll delve into creating a simple TCP server and client in Go. We'll explore the server and client code in parts, breaking down the functionality of each component. This tutorial is aimed at programmers who want to understand how to use Go's net package for network communication.
+date: 2024-05-27
+published: true
+---
+
+## TCP Server Code
+
+Let's start with the TCP server. The server listens for incoming connections, reads data sent by clients, and prints the received messages to the console.
+
+### 1. Importing Necessary Packages
+
+```go
+package main
+
+import (
+	"fmt"
+	"io"
+	"net"
+)
+```
+
+We import three packages: `fmt` for formatted I/O, `io` for input/output operations, and `net` for network-related functions.
+
+### 2. Setting Up the Listener
+
+```go
+func main() {
+	connection, err := net.Listen("tcp", ":8088")
+	if err != nil {
+		panic(err)
+	}
+	defer connection.Close()
+    //...
+}
+```
+
+Here, we set up a TCP listener on port 8088. If an error occurs during this process, we handle it with `panic(err)`, which stops the program and prints the error. We also ensure that the listener is closed when the program exits using defer `connection.Close()`.
+
+### 3. Accepting Client Connections
+
+```go
+func main() {
+    // ...
+    for {
+		client, err := connection.Accept()
+		if err != nil {
+			panic(err)
+		}
+		go handleClient(client)
+	}
+}
+
+```
+
+We enter an infinite loop to accept incoming client connections. The `Accept()` method waits for and returns the next connection to the listener. Each connection is handled in a separate goroutine, allowing the server to handle multiple clients concurrently.
+
+### 4. Handling Client Connections
+
+```go
+func handleClient(client io.Reader) {
+	for {
+		buff, beof := readBuffer(client)
+		if beof {
+			fmt.Println("client disconnect...")
+			break
+		} else {
+			fmt.Printf("Message: %s\n", string(buff))
+		}
+	}
+}
+```
+
+The `handleClient` function reads data from the client in a loop. If the client disconnects (`beof` is true), the function prints a message and exits the loop. Otherwise, it prints the received message.
+
+### 5. Reading Data from the Client
+
+```go
+func readBuffer(reader io.Reader) ([]byte, bool) {
+	b := make([]byte, 1024)
+	bn, err := reader.Read(b)
+	if err != nil {
+
+		if err == io.EOF {
+			return nil, true
+		} else {
+			panic(err)
+		}
+	}
+
+	return b[:bn], false
+}
+```
+
+The `readBuffer` function reads data into a buffer `b` of size `1024 bytes`. If an error occurs during reading, it checks if the error is `io.EOF`, indicating the end of the file (client disconnected). If so, it returns true for `beof`. For other errors, it panics. If the read is successful, it returns the read bytes and false for `beof`.
+
+## TCP Client Code
+
+Next, let's look at the TCP client. The client connects to the server, reads user input from the console, and sends it to the server.
+
+### 1. Importing Necessary Packages
+
+```go
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"net"
+	"os"
+	"strings"
+)
+```
+
+We import the `bufio` package for buffered I/O, `fmt` for formatted I/O, net for network functions, `os` for OS-level functions, and `strings` for string manipulation.
+
+### 2. Establishing a Connection to the Server
+
+```go
+func main() {
+	conn, err := net.Dial("tcp", ":8088")
+	if err != nil {
+		panic(err)
+	}
+    // ...
+}
+```
+
+We establish a TCP connection to the server on port 8088 using `net.Dial()`. If an error occurs, we handle it with `panic(err)`.
+
+### 3. Reading User Input and Sending Data to the Server
+
+```go
+
+func main() {
+	// ...
+    for {
+		reader := bufio.NewReader(os.Stdin)
+		input, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println("Error reading input:", err)
+			return
+		}
+
+		input = strings.TrimSpace(input)
+
+		conn.Write([]byte(input))
+	}
+}
+```
+
+We enter an infinite loop where we read user input from the console using `bufio.NewReader(os.Stdin).ReadString('\n')`. If an error occurs, we print the error and exit. We then trim any trailing whitespace from the input and send it to the server using `conn.Write([]byte(input))`.
+
+## Full Code
+
+### `server.go`
+```go
+package main
+
+import (
+	"fmt"
+	"io"
+	"net"
+)
+
+func main() {
+	connection, err := net.Listen("tcp", ":8088")
+	if err != nil {
+		panic(err)
+	}
+	defer connection.Close()
+	for {
+		client, err := connection.Accept()
+		if err != nil {
+			panic(err)
+		}
+		go handleClient(client)
+	}
+}
+
+func handleClient(client io.Reader) {
+	for {
+		buff, beof := readBuffer(client)
+		if beof {
+			fmt.Println("client disconnect...")
+			break
+		} else {
+			fmt.Printf("Message: %s\n", string(buff))
+			//fmt.Printf("Buffer: %v [%s]\n", buff, string(buff))
+		}
+	}
+}
+
+func readBuffer(reader io.Reader) ([]byte, bool) {
+	b := make([]byte, 1024)
+	bn, err := reader.Read(b)
+	if err != nil {
+		if err == io.EOF {
+			return nil, true
+		} else {
+			panic(err)
+		}
+	}
+	return b[:bn], false
+}
+```
+
+### `client.go`
+```go
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"net"
+	"os"
+	"strings"
+)
+
+func main() {
+	conn, err := net.Dial("tcp", ":8088")
+	if err != nil {
+		panic(err)
+	}
+
+	for {
+		reader := bufio.NewReader(os.Stdin)
+		input, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println("Error reading input:", err)
+			return
+		}
+
+		input = strings.TrimSpace(input)
+		conn.Write([]byte(input))
+	}
+}
+```
+
+## Conclusion
+In this post, we've walked through creating a simple TCP server and client in Go. We covered setting up the server to listen for connections, handling multiple clients concurrently, reading data from clients, and establishing a client connection to send data to the server. This foundational knowledge can be extended to build more complex networked applications in Go.
+
+Feel free to experiment with the code, and happy coding!
+
