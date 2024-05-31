@@ -1,11 +1,11 @@
 export const siteConfig = {
   name: "Parthka",
-  url: "https://parthka.com",
+  url: "https://parthka.dev",
   description: "A student and backend developer from India 🇮🇳, With curiosity about the inner workings of Computer operating system!",
   author: "Parthka",
   links: {
     github: "https://github.com/p4rthk4",
-    personalSite: "https://parthka.com",
+    personalSite: "https://parthka.dev",
   },
 };
 
